@@ -12,6 +12,7 @@ import habitRouter from './routes/habit.routes.js';
 import focusRouter from './routes/focus.routes.js';
 import emojiRouter from './routes/emoji.routes.js';
 import pointRouter from './routes/point.routes.js';
+import translateRouter from './routes/translate.router.js';
 
 dotenv.config();
 
@@ -36,7 +37,7 @@ app.use(
       }
     },
     credentials: true,
-  }),
+  })
 );
 app.use(
   session({
@@ -48,7 +49,7 @@ app.use(
       secure: isProduction,
       maxAge: 24 * 60 * 60 * 1000,
     },
-  }),
+  })
 );
 app.use(express.json());
 app.use('/images', express.static(join(__dirname, 'public/images')));
@@ -67,6 +68,7 @@ app.use('/habits', habitRouter);
 app.use('/focuses', focusRouter);
 app.use('/emojis', emojiRouter);
 app.use('/points', pointRouter);
+app.use(translateRouter);
 
 // 404 fallback처리
 app.use((_req, res) => {

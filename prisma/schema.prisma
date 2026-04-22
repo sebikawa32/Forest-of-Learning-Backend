@@ -35,35 +35,18 @@ model Point {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   study      Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
-  
 }
 
-
 model PointLog {
-  id             Int           @id @default(autoincrement())
-  studyId        Int           
+  id             Int      @id @default(autoincrement())
+  studyId        Int
   amount         Int
   reason         String
-  focusSessionId Int?          
-  createdAt      DateTime      @default(now())
+  focusSessionId Int?
+  createdAt      DateTime @default(now())
 
-  study          Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
-  focusSession   FocusSession? @relation(fields: [focusSessionId], references: [id])
-
-  @@index([studyId])
-}
-
-
-model PointLog {
-  id             Int           @id @default(autoincrement())
-  studyId        Int           
-  amount         Int
-  reason         String
-  focusSessionId Int?          
-  createdAt      DateTime      @default(now())
-
-  study          Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
-  focusSession   FocusSession? @relation(fields: [focusSessionId], references: [id])
+  study        Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  focusSession FocusSession? @relation(fields: [focusSessionId], references: [id])
 
   @@index([studyId])
 }
@@ -108,7 +91,8 @@ model FocusSession {
   earnedPoint Int        @default(0)
   startedAt   DateTime
   completedAt DateTime
-  study       Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  study       Study      @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  pointLogs   PointLog[]
 
   @@index([studyId, startedAt])
 }
@@ -122,17 +106,4 @@ model EmojiReaction {
   study     Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
 
   @@unique([studyId, emoji])
-}
-
-model PointLog {
-  id             Int           @id @default(autoincrement())
-  studyId        Int
-  amount         Int
-  reason         String
-  focusSessionId Int?
-  createdAt      DateTime      @default(now())
-  FocusSession   FocusSession? @relation(fields: [focusSessionId], references: [id])
-  Study          Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
-
-  @@index([studyId])
 }
