@@ -27,6 +27,11 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
   : [];
 
+// 프록시 환경에서 secure cookie 사용 가능하도록 설정
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -39,6 +44,9 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(express.json());
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'forest-dev-secret',
@@ -47,11 +55,12 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
-app.use(express.json());
+
 app.use('/images', express.static(join(__dirname, 'public/images')));
 
 app.get('/', (_req, res) => {
@@ -70,7 +79,6 @@ app.use('/emojis', emojiRouter);
 app.use('/points', pointRouter);
 app.use(translateRouter);
 
-// 404 fallback처리
 app.use((_req, res) => {
   res.status(404).json({
     error: { code: 'NOT_FOUND', message: '요청한 경로를 찾을 수 없습니다.' },
