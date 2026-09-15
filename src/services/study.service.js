@@ -86,6 +86,18 @@ export const findAllStudies = async ({ page, limit, keyword, order }) => {
           imageUrl: true,
         },
       },
+      point: {
+        select: {
+          totalPoint: true,
+        },
+      },
+      emojiReactions: {
+        select: {
+          id: true,
+          emoji: true,
+          count: true,
+        },
+      },
     },
     orderBy,
     skip,
@@ -116,6 +128,13 @@ export const findStudyById = async (id) => {
       },
       createdAt: true,
       updatedAt: true,
+      emojiReactions: {
+        select: {
+          id: true,
+          emoji: true,
+          count: true,
+        },
+      },
     },
   });
   if (!study) return null;
