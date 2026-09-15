@@ -2,12 +2,15 @@ import argon2 from 'argon2';
 import prisma from '../lib/prisma.js';
 
 const toAbsoluteUrl = (imageUrl) => {
-  const base = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+  const base =
+    process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
   return `${base}${imageUrl}`;
 };
 
 const normalizeBackground = (background) =>
-  background ? { ...background, imageUrl: toAbsoluteUrl(background.imageUrl) } : null;
+  background
+    ? { ...background, imageUrl: toAbsoluteUrl(background.imageUrl) }
+    : null;
 
 export const createStudy = async (data) => {
   const hashedPassword = await argon2.hash(data.password);
@@ -83,6 +86,18 @@ export const findAllStudies = async ({ page, limit, keyword, order }) => {
           imageUrl: true,
         },
       },
+      point: {
+        select: {
+          totalPoint: true,
+        },
+      },
+      emojiReactions: {
+        select: {
+          id: true,
+          emoji: true,
+          count: true,
+        },
+      },
     },
     orderBy,
     skip,
@@ -90,7 +105,10 @@ export const findAllStudies = async ({ page, limit, keyword, order }) => {
   });
 
   return {
-    items: items.map((s) => ({ ...s, background: normalizeBackground(s.background) })),
+    items: items.map((s) => ({
+      ...s,
+      background: normalizeBackground(s.background),
+    })),
     totalCount,
     page,
     limit,
@@ -110,6 +128,13 @@ export const findStudyById = async (id) => {
       },
       createdAt: true,
       updatedAt: true,
+      emojiReactions: {
+        select: {
+          id: true,
+          emoji: true,
+          count: true,
+        },
+      },
     },
   });
   if (!study) return null;
